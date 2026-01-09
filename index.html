@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Multi-Petabyte Data Distribution in Industry & Science with CernVM File System</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
@@ -16,8 +16,125 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section data-markdown>
+					<textarea data-template>
+					## cvmfs-posix-tools
+
+					<aside class="notes">
+					These are tools, modelled after popular file utilities, which offer the convenience of direct effect on CVMFS repo. We believe availability of such commands will make CVMFS administration more attractive to potential adopters.
+					</aside>
+
+					<!-- TODO further deemphasize common prefix, emphasize second half of command names -->
+					<ul style="columns: 2; list-style-type: none;">
+						<li>cvmfs_<strong>chgrp</strong></li>
+						<li>cvmfs_<strong>chmod</strong></li>
+						<li>cvmfs_<strong>chown</strong></li>
+						<li>cvmfs_<strong>insert</strong></li>
+						<li>cvmfs_<strong>ln</strong></li>
+						<li>cvmfs_<strong>mkdir</strong></li>
+						<li>cvmfs_<strong>rm</strong></li>
+						<li>cvmfs_<strong>rmdir</strong></li>
+						<li>cvmfs_<strong>rsync</strong></li>
+						<li>cvmfs_<strong>setfacl</strong></li>
+						<li>cvmfs_<strong>touch</strong></li>
+					</ul>
+
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					<h2>cvmfs-posix-tools</h2>
+
+					But why?
+
+					There's already an established way to upload into CVMFS.
+
+					Let's compare these methods.
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					<h2>Changing contents, canonically</h2>
+
+					<aside class="notes">
+					The first method you learn from the documentation to change the contents of your repo is this:
+					</aside>
+
+
+					Documented method:
+					* cvmfs_server transaction
+					* do changes
+					* cvmfs_server publish
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					<h2>cvmfs_server transaction/publish: under the hood</h2>
+
+					This works as follows:
+
+					`cvmfs_server transaction`:
+
+					- overlayfs mount is changed from read-only to read-write
+
+					`cvmfs_server publish`:
+
+					- looks at overlayfs "scratch area"(?), prepares submission to gateway
+					- gateway changes actual authoritative contents and creates a new revision of repo contents
+					- DOESNT FIT ON SLIDE! waits until the new revision propagates to the local mountpoint
+
+
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+					<h3>cvmfs_server transaction/publish: under the hood</h3>
+
+					* You need disk space in scratch area for overlayfs, all you changes must fit in there.
+					* Copying big files into CVMFS takes extra copying.
+					</textarea>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					## cvmfs-posix-tools: under the hood
+
+					- has S3 backed CVMFS repos in mind
+					- (no ingestsql specifics here!)
+
+					</textarea>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					## cvmfs-posix-tools: demo
+
+					- live env on my laptop
+					- fallback live env on my server, which I can ssh into if my laptop fails
+					- asciinema
+					- video recording
+					</textarea>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					## cvmfs-posix-tools: try it out now!
+
+					- podman / docker container
+					- incus container, VM
+					- qcow2 VM image
+
+					</textarea>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					Last slide
+					- Questions please!
+					- QR code to slides
+					- contacts
+					</textarea>
+				</section>
 			</div>
 		</div>
 
