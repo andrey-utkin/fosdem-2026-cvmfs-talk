@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/white-fosdem-ish.css">
+		<link rel="stylesheet" type="text/css" href="css/asciinema-player.css" />
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
@@ -31,13 +32,34 @@
 
 				<section data-markdown>
 					<textarea data-template>
+						# Fill in
+
+						Contents go there
+					</textarea>
+				</section>
+
+				<section data-markdown  data-background-image="./assets/img/bottle.png" data-background-opacity="1">
+					<textarea data-template>
+						<aside class="notes">
+							5 seconds pause to let viewers appreciate the picture.
+
+							Move on.
+						</aside>
+					</textarea>
+				</section>
+
+				<section data-markdown  data-background-image="./assets/img/bottle.png" data-background-opacity="0.1">
+					<textarea data-template>
 					## cvmfs-posix-tools
 
 					<aside class="notes">
-					These are tools, modelled after popular file utilities, which offer the convenience of direct effect on CVMFS repo. We believe availability of such commands will make CVMFS administration more attractive to potential adopters.
+						These are new tools, modelled after popular file utilities, which offer the convenience of direct effect on CVMFS repo.
+						With big uploads, performance will also be better.
+
+						I believe availability of such commands will make CVMFS administration more attractive to potential adopters.
 					</aside>
 
-					<!-- TODO further deemphasize common prefix, emphasize second half of command names -->
+					<!-- Deemphasize common prefix, emphasize second half of command names -->
 					<ul style="columns: 2; list-style-type: none;">
 						<li>cvmfs_<strong>chgrp</strong></li>
 						<li>cvmfs_<strong>chmod</strong></li>
@@ -56,30 +78,63 @@
 				</section>
 				<section data-markdown>
 					<textarea data-template>
-					<h2>cvmfs-posix-tools</h2>
+						## Changing contents, the usual way
 
-					But why?
 
-					There's already an established way to upload into CVMFS.
+						The usual method:
+						* `cvmfs_server transaction`
+						* make changes
+						* `cvmfs_server publish`
 
-					Let's compare these methods.
+						<aside class="notes">
+							To explain why they are needed, let's briefly see how changing contents <strong>currently</strong> works from the user perspective.
+
+							The first method you learn from the documentation to change the contents of your repo is this:
+
+							* `cvmfs_server transaction`
+							* make changes
+							* `cvmfs_server publish`
+
+						</aside>
 					</textarea>
 				</section>
-				<section data-markdown>
-					<textarea data-template>
-					<h2>Changing contents, canonically</h2>
 
+				<section>
 					<aside class="notes">
-					The first method you learn from the documentation to change the contents of your repo is this:
+						This embedded asciinema player is local.
 					</aside>
-
-
-					Documented method:
-					* cvmfs_server transaction
-					* do changes
-					* cvmfs_server publish
-					</textarea>
+					<iframe src='publish-demo.html'
+							width="100%"
+							height="100%"
+							style=" width:100%; height:100vh; overflow:hidden; margin:0px; padding:0px; border:none;"
+						>
+					</iframe>
 				</section>
+
+				<!--
+				<section>
+					<aside class="notes">
+						This embedded asciinema player requires Internet connection.
+					</aside>
+					<script src="https://asciinema.org/a/ykcHljeTTw4cLKE5.js" id="asciicast-ykcHljeTTw4cLKE5" async="true"></script>
+				</section>
+				-->
+
+				<!--
+				<section>
+					<aside class="notes">
+						This embedded asciinema player is local but plays irksomely when red selections appear.
+					</aside>
+					<iframe src='about:blank'>
+					<div
+					class="asciinema"
+					file="./assets/publish-demo.asciicast"
+					style="width: 900px; height: 400px;"
+					></div>
+				</section>
+				-->
+
+				<!--
 				<section data-markdown>
 					<textarea data-template>
 					<h2>cvmfs_server transaction/publish: under the hood</h2>
@@ -89,6 +144,27 @@
 					`cvmfs_server transaction`:
 
 					- overlayfs mount is changed from read-only to read-write
+
+					from this:
+					<pre><code data-trim data-noescape class="weird-code no-highlight">
+					my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+					overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">ro</span>,nodev,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
+					</code></pre>
+
+					to this:
+
+					<pre><code data-trim data-noescape class="no-highlight">
+					my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+					overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">rw</span>,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
+					</code></pre>
+
+					</textarea>
+				</section>
+				-->
+				<section data-markdown>
+					<textarea data-template>
+					<h2>cvmfs_server transaction/publish: under the hood</h2>
+
 
 					`cvmfs_server publish`:
 
@@ -118,6 +194,51 @@
 					</textarea>
 				</section>
 
+				<!--
+				<section>
+						<table width="100%" border>
+							<tr>
+								<td>transaction/publish</td>
+								<td>cvmfs-posix-tools</td>
+							</tr>
+							<tr>
+								<td>
+									<strong>cvmfs_server transaction</strong> remounts overlayfs
+
+									from this:
+									<pre><code data-trim data-noescape class="no-highlight">
+									my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+									overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">ro</span>,nodev,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
+									</code></pre>
+
+									to this:
+
+									<pre><code data-trim data-noescape class="no-highlight">
+									my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
+									overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">rw</span>,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
+									</code></pre>
+
+
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><strong>cp</strong>copies files into local scratch area used by overlayfs (tmpfs or not)</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><strong>cvmfs_server publish</strong>
+									remounts overlayfs
+								</td>
+								<td></td>
+							</tr>
+						</table>
+				</section>
+				-->
+
+				<section data-markdown>
+				</section>
+
 				<section data-markdown>
 					<textarea data-template>
 					## cvmfs-posix-tools: demo
@@ -134,6 +255,11 @@
 					## cvmfs-posix-tools: try it out now!
 
 					- podman / docker container
+
+					```
+					[docker|podman] run -it docker://docker.io/andreyutkin/cvmfs-fosdem26-demos
+					```
+
 					- incus container, VM
 					- qcow2 VM image
 
@@ -151,10 +277,21 @@
 
 				<section data-markdown>
 					<textarea data-template>
-					Last slide
-					- Questions please!
-					- QR code to slides
+					## Questions, please!
+
+
+					QR code to slides
 					- contacts
+					</textarea>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					## References
+
+					(Not for actual presentation)
+
+					autkin demos: https://forge.autkin.net/autkin/cvmfs-fosdem26-demos
 					</textarea>
 				</section>
 			</div>
@@ -164,6 +301,7 @@
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+		<script src="js/asciinema-player.min.js"></script>
 		<script>
 			// More info about initialization & config:
 			// - https://revealjs.com/initialization/
@@ -174,6 +312,40 @@
 				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
 			});
+			// https://github.com/mickaelbaron/revealasciinema/blob/master/workaround.html
+			// https://discourse.asciinema.org/t/asciinema-reveal-js-display-issue/618/3
+			/*
+			{
+				const asciinemas = document.getElementsByClassName("asciinema");
+				for (let i = 0; i < asciinemas.length; i++) {
+					const img = document.createElement("img");
+					img.setAttribute("src", "assets/img/asciinema-player-icon.svg");
+					asciinemas[i].appendChild(img);
+				}
+			}
+			*/
+			function checkForCasts(event) {
+				const asciinema =
+					event.currentSlide.getElementsByClassName("asciinema")[0];
+				if (asciinema) {
+					const filename = asciinema.getAttribute("file");
+					if (asciinema && !asciinema.playerObject) {
+						// Remove image
+						const firstelementChild = asciinema.firstElementChild;
+						if (firstelementChild) {
+							asciinema.firstElementChild.remove();
+						}
+
+						asciinema.playerObject = AsciinemaPlayer.create(
+							filename,
+							asciinema,
+							{ fit: "none" }
+						);
+					}
+				}
+			}
+			Reveal.on("ready", checkForCasts);
+			Reveal.on("slidechanged", checkForCasts);
 		</script>
 	</body>
 </html>

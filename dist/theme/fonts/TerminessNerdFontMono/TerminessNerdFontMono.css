@@ -1,0 +1,26 @@
+/* vim: set ts=2 sw=2 et ai: */
+@font-face {
+  font-family: 'TerminessNerdFontMono';
+  font-style: normal;
+  font-weight: normal;
+  src: local('TerminessNerdFontMono'), local('TerminessNerdFontMono-Regular'), url(./TerminessNerdFontMono-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'TerminessNerdFontMono';
+  font-style: normal;
+  font-weight: bold;
+  src: local('TerminessNerdFontMono-Bold'), url(./TerminessNerdFontMono-Bold.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'TerminessNerdFontMono';
+  font-style: italic;
+  font-weight: bold;
+  src: local('TerminessNerdFontMono-BoldItalic'), url(./TerminessNerdFontMono-BoldItalic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'TerminessNerdFontMono Bold';
+  font-style: normal;
+  font-weight: bold;
+  src: local('TerminessNerdFontMono-Bold'), url(./TerminessNerdFontMono-Bold.ttf) format('truetype');
+}

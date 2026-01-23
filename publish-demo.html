@@ -1,0 +1,18 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="css/asciinema-player.css" />
+</head>
+<body>
+	<!-- <img src="assets/img/fosdem-gear.svg"> -->
+	<div id="publish-demo-element"></div>
+	<script src="js/asciinema-player.min.js"></script>
+	<script>
+		AsciinemaPlayer.create('./assets/publish-demo.v2.asciicast', document.getElementById('publish-demo-element'),
+			{
+				cols: 80,
+				rows: 20,
+			}
+		);
+	</script>
+</body>
+</html>
