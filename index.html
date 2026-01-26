@@ -27,6 +27,8 @@
 						<li>Georgios Christodoulis, CERN</li>
 						<li>Andriy Utkin</li>
 					</ul>
+
+					<small>2026</small>
 					</textarea>
 				</section>
 
@@ -78,10 +80,8 @@
 				</section>
 				<section data-markdown>
 					<textarea data-template>
-						## Changing contents, the usual way
+						## Changing contents,<br>the usual way
 
-
-						The usual method:
 						* `cvmfs_server transaction`
 						* make changes
 						* `cvmfs_server publish`
@@ -104,10 +104,8 @@
 						This embedded asciinema player is local.
 					</aside>
 					<iframe src='publish-demo.html'
-							width="100%"
-							height="100%"
-							style=" width:100%; height:100vh; overflow:hidden; margin:0px; padding:0px; border:none;"
-						>
+						width="1920px" height="1080px"
+					>
 					</iframe>
 				</section>
 
@@ -134,109 +132,76 @@
 				</section>
 				-->
 
-				<!--
 				<section data-markdown>
 					<textarea data-template>
-					<h2>cvmfs_server transaction/publish: under the hood</h2>
+						<aside class="notes">
+							Importantly, in this way, two expensive steps must occur to accomplish the task of publishing a new file.
 
-					This works as follows:
+							First, the new file is copied into local scratch area.
 
-					`cvmfs_server transaction`:
+							SKIPPABLE BEGIN
 
-					- overlayfs mount is changed from read-only to read-write
+							This is dealt by overlayfs, it provides a nice illusion of editing the filesystem directly, and it enables the next step, the publish command, to instantly see what are the changed files to upload.
 
-					from this:
-					<pre><code data-trim data-noescape class="weird-code no-highlight">
-					my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
-					overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">ro</span>,nodev,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
-					</code></pre>
+							SKIPPABLE END
 
-					to this:
+							Second, the copy in the scratch area is transferred to the primary storage of CVMFS repo.
 
-					<pre><code data-trim data-noescape class="no-highlight">
-					my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
-					overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">rw</span>,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
-					</code></pre>
+							It can be a local directory if we are working directly on the main server, called Stratum 0.
+
+							It can be S3 location.
+
+							And it can be a remote CVMFS server, running a so called Gateway service.
+						</aside>
+
+						<table width="100%">
+							<tr width="100%">
+								<td width="75%">
+									<code style="white-space: nowrap;">cvmfs_server transaction</code>
+								</td>
+								<td width="25%">
+									change overlayfs mode
+								</td>
+							</tr>
+							<tr width="100%">
+								<td width="75%">
+									<code style="white-space: nowrap;">cp bigmodel.gguf /cvmfs/my.repo</code>
+								</td>
+								<td width="25%">
+									copy to scratch area
+								</td>
+							</tr>
+							<tr width="100%">
+								<td width="60%">
+									<code style="white-space: nowrap;">cvmfs_server publish</code>
+								</td>
+								<td width="25%">
+									copy to primary storage
+								</td>
+							</tr>
+						</table>
 
 					</textarea>
 				</section>
-				-->
+
 				<section data-markdown>
 					<textarea data-template>
-					<h2>cvmfs_server transaction/publish: under the hood</h2>
+						## cvmfs-rsync demo
 
-
-					`cvmfs_server publish`:
-
-					- looks at overlayfs "scratch area"(?), prepares submission to gateway
-					- gateway changes actual authoritative contents and creates a new revision of repo contents
-					- DOESNT FIT ON SLIDE! waits until the new revision propagates to the local mountpoint
-
-
+						TODO asciicast
 					</textarea>
 				</section>
-				<section data-markdown>
-					<textarea data-template>
-					<h3>cvmfs_server transaction/publish: under the hood</h3>
 
-					* You need disk space in scratch area for overlayfs, all you changes must fit in there.
-					* Copying big files into CVMFS takes extra copying.
-					</textarea>
-				</section>
 
 				<section data-markdown>
 					<textarea data-template>
 					## cvmfs-posix-tools: under the hood
 
-					- has S3 backed CVMFS repos in mind
-					- (no ingestsql specifics here!)
+					- uploads all the new files to S3 directly
+					- pushes metadata changes to CVMFS Gateway host
+					- waits for new CVMFS revision to become visible
 
 					</textarea>
-				</section>
-
-				<!--
-				<section>
-						<table width="100%" border>
-							<tr>
-								<td>transaction/publish</td>
-								<td>cvmfs-posix-tools</td>
-							</tr>
-							<tr>
-								<td>
-									<strong>cvmfs_server transaction</strong> remounts overlayfs
-
-									from this:
-									<pre><code data-trim data-noescape class="no-highlight">
-									my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
-									overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">ro</span>,nodev,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
-									</code></pre>
-
-									to this:
-
-									<pre><code data-trim data-noescape class="no-highlight">
-									my.repo on /var/spool/cvmfs/my.repo/rdonly type fuse (<span style="color:red">ro</span>,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other)
-									overlay_my.repo on /cvmfs/my.repo type overlay (<span style="color:red">rw</span>,relatime,lowerdir=/var/spool/cvmfs/my.repo/rdonly,upperdir=/var/spool/cvmfs/my.repo/scratch/current,workdir=/var/spool/cvmfs/my.repo/ofs_workdir,uuid=on)
-									</code></pre>
-
-
-								</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><strong>cp</strong>copies files into local scratch area used by overlayfs (tmpfs or not)</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><strong>cvmfs_server publish</strong>
-									remounts overlayfs
-								</td>
-								<td></td>
-							</tr>
-						</table>
-				</section>
-				-->
-
-				<section data-markdown>
 				</section>
 
 				<section data-markdown>
@@ -273,6 +238,49 @@
 					- demo
 
 					</textarea>
+				</section>
+
+				<section>
+					<aside class="notes">
+						Here we use the lazy pulling.
+
+						In this example we use a middle-sized image, slightly more than 1 Gigabyte.
+
+						This image is developed and distributed by and for scientists, and is somewhat popular.
+
+						It takes 25 seconds to fetch whatever is strictly necessary and execute the python process which
+						loads the target module.
+
+						Afterwards, the CVMFS cache is 600 Megabytes.
+						So we skipped downloading quite a lot.
+					</aside>
+					<iframe src='demo-lazy-pulling-1.html'
+						width="1920px" height="1080px"
+					>
+					</iframe>
+				</section>
+
+				<section>
+					<aside class="notes">
+						This embedded asciinema player is local.
+
+						You can, of course, use the same container image the usual way: issue a normal podman run
+						command and let it download the image.
+
+						This demo was recorded on a very fast connection, by the way, the uplink is upward of a gigabit.
+
+						(Wait for the animation to end with the "no space left on device")
+
+						Unless it doesn't fit on your disk, in which case you'd have to go on a cleanup diversion, which
+						happens regularly when you're working a lot with containers.
+
+						This is hilarious but this was accidentally discovered during preparation of this presentation.
+						There is no hidden tricks...
+					</aside>
+					<iframe src='demo-lazy-pulling-2.html'
+						width="1920px" height="1080px"
+					>
+					</iframe>
 				</section>
 
 				<section data-markdown>
