@@ -34,9 +34,7 @@
 
 				<section data-markdown>
 					<textarea data-template>
-						# Fill in
-
-						Contents go there
+						# George's slides
 					</textarea>
 				</section>
 
@@ -56,9 +54,12 @@
 
 					<aside class="notes">
 						These are new tools, modelled after popular file utilities, which offer the convenience of direct effect on CVMFS repo.
-						With big uploads, performance will also be better.
 
-						I believe availability of such commands will make CVMFS administration more attractive to potential adopters.
+					   	Can be seen as easier to use tools.
+
+						They provide speedups in some modes.
+
+						They can help avoid running out of disk space in scratch area.
 					</aside>
 
 					<!-- Deemphasize common prefix, emphasize second half of command names -->
@@ -187,9 +188,42 @@
 				<section data-markdown>
 					<textarea data-template>
 						## cvmfs-rsync demo
-
-						TODO asciicast
 					</textarea>
+				</section>
+
+				<section>
+					<aside class="notes">
+						This is publish method adding a 4 Gigabyte file into an S3-backed CVMFS repository.
+
+						In this demo compression is disabled.
+						Compression is on by default.
+					</aside>
+					<iframe src='demo-publish-bigmodel.html'
+						width="1920px" height="1080px"
+					>
+					</iframe>
+				</section>
+
+				<section>
+					<aside class="notes">
+						This is cvmfs_rsync adding the same 4 Gigabyte file.
+						But it ends up finishing a lot faster, and a big factor to that is the layout of data CVMFS
+						stores on S3.
+
+						Here, cvmfs_rsync was configured via yaml file to not chunk it, but to upload it to S3 with a
+						location pattern reflecting its directory path, and this ends up being a lot faster.
+
+						The layout used by publish command is called Content Addressable Storage. A well-recognized
+						example of this concept is object storage in Git repositories. It enables deduplication and
+						simple integrity checks(?).
+
+						cvmfs_rsync can be told to upload the files in the same way as publish command.
+
+					</aside>
+					<iframe src='demo-cvmfs_rsync-external-faster-plus-s3-listing.html'
+						width="1920px" height="1080px"
+					>
+					</iframe>
 				</section>
 
 
@@ -206,36 +240,9 @@
 
 				<section data-markdown>
 					<textarea data-template>
-					## cvmfs-posix-tools: demo
-
-					- live env on my laptop
-					- fallback live env on my server, which I can ssh into if my laptop fails
-					- asciinema
-					- video recording
-					</textarea>
-				</section>
-
-				<section data-markdown>
-					<textarea data-template>
-					## cvmfs-posix-tools: try it out now!
-
-					- podman / docker container
-
-					```
-					[docker|podman] run -it docker://docker.io/andreyutkin/cvmfs-fosdem26-demos
-					```
-
-					- incus container, VM
-					- qcow2 VM image
-
-					</textarea>
-				</section>
-
-				<section data-markdown>
-					<textarea data-template>
 					## Containers images on mounted CVMFS
 
-					- demo
+					demo
 
 					</textarea>
 				</section>
@@ -285,8 +292,20 @@
 
 				<section data-markdown>
 					<textarea data-template>
-					## Questions, please!
+					## CVMFS install party + adoption Q&A
 
+					Sunday 10:00 UA.4.222
+
+					BOF session
+
+					QR code
+
+					</textarea>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					## Questions, please!
 
 					QR code to slides
 					- contacts
