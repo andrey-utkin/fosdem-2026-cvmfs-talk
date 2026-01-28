@@ -105,13 +105,115 @@
 					<textarea data-template>
 						### Software distribution in HEP
 
-						![](assets/img/www.png) ![](assets/img/www_graphed.png)
+						![](assets/img/george/www.png) ![](assets/img/george/www_graphed.png)
 						<aside class="notes">
 							Something that people may not be very aware of is the amount of data that experiments in HEP are producing! The CERN Data Center stores more than 30 petabytes of data per year from the LHC experiments.
 							These data along with the software used for their processing and analysis needs to be further distributed to laboratories all over the world.
 						</aside>
 					</textarea>
 				</section>
+        <section data-markdown>
+					<textarea data-template>
+						### CernVM Filesystem (CVMFS)
+						![](assets/img/george/eeassi.png) ![](assets/img/george/software_stack.png)
+						<aside class="notes">
+              And here comes CVMFS.-----
+              CVMFS is a read-only filesystem that for the end user provides an experience similar to an on-demand streaming service (but for scientific software).------
+              As an example of access here I have used EESSI, the European Environment for Scientific Software Installations, whose goal is to create a uniform user experience for people who are using scientific software regardless of the system they are experimenting on, and they are using CVMFS as a part of their software stack. I would definitely recommend attending their presentation tomorrow. ------
+              From the users point of view here, the interesting observation is that CVMFS provides a regular RO filesystem view of software that lives elsewhere, downloading only the essential parts upon access.
+						</aside>
+					</textarea>
+				</section>
+        <section data-markdown>
+					<textarea data-template>
+						### CernVM Filesystem (CVMFS)
+						![](assets/img/george/fuse.png)
+						<aside class="notes">
+              But how does this work?
+              CVMFS is a filesystem, that is living in userspace.
+              Under the hood it is using FUSE, which allows for regular filesystem handling in userspace.
+              FUSE comes with a kernel module and a  userspace library.
+              When a user is accessing a file, vfs will redirect the call to the FUSE Kernel module, which will then get propagated to CVMFS that implements all the necessary RO syscalls.
+              If the file is present in the local cache, it will be used directly, if not it will be first downloaded.
+              To satisfy the the size restrictions of the client cache, CVMFS is using an LRU cleanup policy.
+						</aside>
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						## File distribution
+
+						* Files are stored by content using hash (Merkle) trees
+						* Allows for data verification and compression 
+						* LRU cache on client side
+						* Content addressable storage allows de-duplication (each hash is stored only once)
+
+						![](assets/img/george/publishing.png)
+						<aside class="notes">
+              But how do files end up to the client?
+              Files are becoming available to the client by a process called publishing.
+              During publishing files are chunked and hashed into hash trees, specifically Merkle trees (same format is used on git) and compressed.
+              Internally they are addressed by content not by their name or path which allows for de-duplication, which means that since files are stored by their hashed content, same hash is never saved twice resulting in significant reduction of used space.
+              An order of magnitude of the impact of deduplication we can see later.
+              After publishing the files are available in mirror servers, where can be fetched from the client via HTTP requests.
+						</aside>
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						### CVMFS at CERN with numbers
+
+            * ~33B files
+            * ~2PB of data
+						* 8k container images
+						* ~290 repositories
+
+						![](assets/img/george/cvmfs_files_at_CERN.png)
+						<aside class="notes">
+              CVMFS has been in development for quite long and it has been already widely adopted by the HEP community.
+              You can see the evolution of files under /cvmfs from the main CERN repositories up until 2024 (we need to get our numbers up to date).
+              CERN is hosting around 260 repositories, distributing more than 2PB of deduplicated content.
+						</aside>
+					</textarea>
+				</section>
+				<section data-markdown>
+					<textarea data-template>
+						### Distribution of Container Images
+
+            <strong>Unseekable</strong>  and **unindexed** file
+
+						![](assets/img/george/cvmfs_files_at_CERN.png)
+          <aside class="notes">
+              CVMFS has been in development for quite long and it has been already widely adopted by the HEP community.
+              You can see the evolution of files under /cvmfs from the main CERN repositories up until 2024 (we need to get our numbers up to date).
+              CERN is hosting around 260 repositories, distributing more than 2PB of deduplicated content.
+						</aside>
+					</textarea>
+				</section>
+
+        <section data-markdown>
+					<textarea data-template>
+						### CernVM Filesystem (CVMFS)
+
+            ```bash
+            $ ls /cvmfs/software.eessi.io/
+            host init README.eessi versions
+            $ cat /cvmfs/software.eessi.io #JIT download
+            EESSI - the European Environment for Scientific Software Installations
+
+            Getting started
+            --------------
+            ```
+
+						<aside class="notes">
+              And here comes CVMFS.-----
+              CVMFS is a read-only filesystem that for the end user provides an experience similar to an on-demand streaming service (but for scientific software).------
+              As an example of access here I have used EESSI, the European Environment for Scientific Software Installations, whose goal is to create a uniform user experience for people who are using scientific software regardless of the system they are experimenting on, and they are using CVMFS as a part of their software stack. I would definitely recommend attending their presentation tomorrow. ------
+              From the users point of view here, the interesting observation is that CVMFS provides a regular RO filesystem view of software that lives elsewhere, downloading only the essential parts upon access.
+						</aside>
+					</textarea>
+				</section>
+
 
 				<section data-markdown>
 					<textarea data-template>
