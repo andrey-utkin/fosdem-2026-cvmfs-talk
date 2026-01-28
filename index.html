@@ -153,6 +153,7 @@
 					</textarea>
 				</section>
 
+				<!--
 				<section>
 					<aside class="notes">
 					</aside>
@@ -161,6 +162,19 @@
 
 					<iframe src='publish-demo.html'
 						width="1920px" height="1080px"
+					>
+					</iframe>
+				</section>
+				-->
+				<section>
+					<aside class="notes">
+						This is publish method adding a 4 Gigabyte file into an S3-backed CVMFS repository.
+					</aside>
+
+					Publish command in action
+
+					<iframe src='demo-publish-bigmodel.html'
+							width="1920px" height="1080px"
 					>
 					</iframe>
 				</section>
@@ -217,43 +231,10 @@
 					</textarea>
 				</section>
 
-				<section data-markdown>
-					<textarea data-template>
-						## cvmfs-rsync demo
-					</textarea>
-				</section>
-
 				<section>
 					<aside class="notes">
-						This is publish method adding a 4 Gigabyte file into an S3-backed CVMFS repository.
-
-						In this demo compression is disabled.
-						Compression is on by default.
-					</aside>
-
-					publish command in action
-
-					<iframe src='demo-publish-bigmodel.html'
-						width="1920px" height="1080px"
-					>
-					</iframe>
-				</section>
-
-				<section>
-					<aside class="notes">
-						This is cvmfs_rsync adding the same 4 Gigabyte file.
-						But it ends up finishing a lot faster, and a big factor to that is the layout of data CVMFS
-						stores on S3.
-
-						Here, cvmfs_rsync was configured via yaml file to not chunk it, but to upload it to S3 with a
-						location pattern reflecting its directory path, and this ends up being a lot faster.
-
-						The layout used by publish command is called Content Addressable Storage. A well-recognized
-						example of this concept is object storage in Git repositories. It enables deduplication and
-						simple integrity checks(?).
-
-						cvmfs_rsync can be told to upload the files in the same way as publish command.
-
+					    You can also choose whether to store new files in Content Addressable Storage fashion, or
+						represent the tree hierarchy and original filenames in S3 locations.
 					</aside>
 
 					cvmfs_rsync in action
@@ -267,20 +248,18 @@
 
 				<section data-markdown>
 					<textarea data-template>
-					## cvmfs-posix-tools: under the hood
+						## cvmfs-posix-tools:<br>under the hood
 
-					- uploads all the new files to S3 directly
-					- pushes metadata changes to CVMFS Gateway host
-					- waits for new CVMFS revision to become visible
+						- uploads all the new files to S3 directly
+						- pushes metadata changes to CVMFS Gateway host
+						- waits for new CVMFS revision to become visible
 
 					</textarea>
 				</section>
 
 				<section data-markdown>
 					<textarea data-template>
-					## Containers images on mounted CVMFS
-
-					demo
+						## Lazy-pulling<br>container images
 
 					</textarea>
 				</section>
@@ -334,8 +313,18 @@
 						<center>
 						<table width=100%>
 							<tr>
+								<td>
+									Georgios Christodoulis, CERN<br>
+									<span style="font-style: italic">georgios.christodoulis@cern.ch</span>
+								</td>
+								<td>
+									Andriy Utkin<br>
+									<span style="font-style: italic">hello@autkin.net</span>
+								</td>
+							</tr>
+							<tr>
 								<td colspan="2">
-									<img src="assets/img/bof-schedule.png">
+									<img src="assets/img/bof-schedule.png" width="70%">
 
 								</td>
 							</tr>
@@ -344,7 +333,7 @@
 									Open&nbsp;Source&nbsp;at&nbsp;CERN
 								</td>
 								<td>
-									<img src="assets/img/map-k1.png"  style="vertical-align:middle">
+									<img src="assets/img/map-k1.png" width="70%" style="vertical-align:middle">
 								</td>
 							</tr>
 						</table>
@@ -378,6 +367,16 @@
 						![map](assets/img/map-k1.png)
 					</textarea>
 				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					## Backup slides
+
+					TODO
+
+					</textarea>
+				</section>
+
 				<section data-markdown>
 					<textarea data-template>
 					## References
