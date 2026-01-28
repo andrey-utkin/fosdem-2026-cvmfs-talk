@@ -103,16 +103,84 @@
 
 				<section data-markdown>
 					<textarea data-template>
-					## cvmfs-posix-tools
+						## Lazy-pulling<br>container images
+
+					</textarea>
+				</section>
+
+				<section>
+					<aside class="notes">
+						Here we use the lazy pulling.
+
+						Here we use a popular image slightly bigger than 1 Gigabyte.
+
+						This image is developed and distributed by and for scientists, and is somewhat popular.
+
+						It takes 25 seconds to fetch whatever is strictly necessary and execute the python process which
+						loads the target module.
+
+						Afterwards, the CVMFS cache is 600 Megabytes.
+						So we skipped downloading quite a lot.
+					</aside>
+
+					Lazy pulling in action
+
+					<iframe src='demo-lazy-pulling-1.html'
+						width="1920px" height="1080px"
+					>
+					</iframe>
+				</section>
+
+				<section>
+					<aside class="notes">
+						You can, of course, use the same container image the usual way: issue a normal podman run
+						command and let it download the image.
+
+						This demo was recorded on a very fast connection, by the way, the uplink is upward of a gigabit.
+
+						(Wait for the animation to end with the "no space left on device")
+
+						Unless it doesn't fit on your disk, in which case you'd have to go on a cleanup diversion or
+						resize your machine.
+					</aside>
+
+					Normal image pulling
+
+					<iframe src='demo-lazy-pulling-2.html'
+						width="1920px" height="1080px"
+					>
+					</iframe>
+				</section>
+
+				<section data-markdown>
+					<textarea data-template>
+					## References
+
+					[doc](https://cvmfs.readthedocs.io/en/stable/cpt-containers.html),
+					KubeCon25
+					[slides](https://static.sched.com/hosted_files/kccnceu2025/f3/ImageSnapshottersForEfficientContainerExecutionInParticlePhysics.pdf),
+					[video](https://www.youtube.com/watch?v=Dc6S4vU9GiM)
+					</textarea>
+				</section>
+
+				<section>
+
+					<h2>cvmfs-posix-tools</h2>
 
 					<aside class="notes">
-						These are new tools, modelled after popular file utilities, which offer the convenience of direct effect on CVMFS repo.
 
-					   	Can be seen as easier to use tools.
+						These are new tools, modelled after popular file utilities, which offer the convenience of
+						direct effect on CVMFS repo.
+						<br>
+
+						Can be seen as easier to use tools.
+						<br>
 
 						They provide speedups in some modes.
+						<br>
 
 						They can help avoid running out of disk space in scratch area.
+
 					</aside>
 
 					<!-- Deemphasize common prefix, emphasize second half of command names -->
@@ -130,8 +198,8 @@
 						<li>cvmfs_<strong>touch</strong></li>
 					</ul>
 
-					</textarea>
 				</section>
+
 				<section data-markdown>
 					<textarea data-template>
 						## Changing contents,<br>the usual way
@@ -141,8 +209,7 @@
 						* `cvmfs_server publish`
 
 						<aside class="notes">
-							To explain why they are needed, let's briefly see how changing contents <strong>currently</strong> works from the user perspective.
-
+							To explain why they are needed, let's briefly see how changing contents <strong>currently</strong> works from the user perspective.<br>
 							The first method you learn from the documentation to change the contents of your repo is this:
 
 							* `cvmfs_server transaction`
@@ -168,7 +235,15 @@
 				-->
 				<section>
 					<aside class="notes">
+						<p>
 						This is publish method adding a 4 Gigabyte file into an S3-backed CVMFS repository.
+						</p><p>
+						`transaction` command changes the overlay mount from read-only to read-write.
+						</p><p>
+						The file first ends up in the scratch dir.
+						</p><p>
+						And after the `publish` command, the file is in the actual CVMFS mount.
+						</p>
 					</aside>
 
 					Publish command in action
@@ -182,23 +257,23 @@
 				<section data-markdown>
 					<textarea data-template>
 						<aside class="notes">
+						<p>
 							Importantly, in this way, two expensive steps must occur to accomplish the task of publishing a new file.
-
+						</p><p>
 							First, the new file is copied into local scratch area.
-
+						</p><p>
 							SKIPPABLE BEGIN
-
 							This is dealt by overlayfs, it provides a nice illusion of editing the filesystem directly, and it enables the next step, the publish command, to instantly see what are the changed files to upload.
-
 							SKIPPABLE END
-
+						</p><p>
 							Second, the copy in the scratch area is transferred to the primary storage of CVMFS repo.
-
+						</p><p>
 							It can be a local directory if we are working directly on the main server, called Stratum 0.
-
+						</p><p>
 							It can be S3 location.
-
-							And it can be a remote CVMFS server, running a so called Gateway service.
+						</p><p>
+							And it can be a remote CVMFS Gateway service.
+						</p>
 						</aside>
 
 						<table width="100%">
@@ -264,53 +339,18 @@
 
 				<section data-markdown>
 					<textarea data-template>
-						## Lazy-pulling<br>container images
+					## References
 
+					Container Images and CVMFS:
+					<br>
+					[doc](https://cvmfs.readthedocs.io/en/stable/cpt-containers.html),
+					KubeCon25
+					[slides](https://static.sched.com/hosted_files/kccnceu2025/f3/ImageSnapshottersForEfficientContainerExecutionInParticlePhysics.pdf),
+					[video](https://www.youtube.com/watch?v=Dc6S4vU9GiM)
+
+					cvmfs-posix-tools:
+					[pull request](https://github.com/cvmfs/cvmfs/pull/3964)
 					</textarea>
-				</section>
-
-				<section>
-					<aside class="notes">
-						Here we use the lazy pulling.
-
-						Here we use a popular image slightly bigger than 1 Gigabyte.
-
-						This image is developed and distributed by and for scientists, and is somewhat popular.
-
-						It takes 25 seconds to fetch whatever is strictly necessary and execute the python process which
-						loads the target module.
-
-						Afterwards, the CVMFS cache is 600 Megabytes.
-						So we skipped downloading quite a lot.
-					</aside>
-
-					Lazy pulling in action
-
-					<iframe src='demo-lazy-pulling-1.html'
-						width="1920px" height="1080px"
-					>
-					</iframe>
-				</section>
-
-				<section>
-					<aside class="notes">
-						You can, of course, use the same container image the usual way: issue a normal podman run
-						command and let it download the image.
-
-						This demo was recorded on a very fast connection, by the way, the uplink is upward of a gigabit.
-
-						(Wait for the animation to end with the "no space left on device")
-
-						Unless it doesn't fit on your disk, in which case you'd have to go on a cleanup diversion or
-						resize your machine.
-					</aside>
-
-					Normal image pulling
-
-					<iframe src='demo-lazy-pulling-2.html'
-						width="1920px" height="1080px"
-					>
-					</iframe>
 				</section>
 
 				<section>
@@ -363,6 +403,7 @@
 					</textarea>
 				</section>
 
+
 				<section data-markdown>
 					<textarea data-template>
 						## Open Source at CERN
@@ -379,22 +420,6 @@
 
 					TODO
 
-					</textarea>
-				</section>
-
-				<section data-markdown>
-					<textarea data-template>
-					## References
-
-					Container Images and CVMFS:
-					<br>
-					[doc](https://cvmfs.readthedocs.io/en/stable/cpt-containers.html),
-					KubeCon25
-					[slides](https://static.sched.com/hosted_files/kccnceu2025/f3/ImageSnapshottersForEfficientContainerExecutionInParticlePhysics.pdf),
-					[video](https://www.youtube.com/watch?v=Dc6S4vU9GiM)
-
-					cvmfs-posix-tools:
-					[pull request](https://github.com/cvmfs/cvmfs/pull/3964)
 					</textarea>
 				</section>
 			</div>
